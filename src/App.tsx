@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { Upload, FileText, History, CheckCircle2, Search } from 'lucide-react';
+import { Upload, FileText, History, CheckCircle2 } from 'lucide-react';
 import UploadTab from './components/UploadTab';
 import AnswersTab from './components/AnswersTab';
 import ExamTab from './components/ExamTab';
 import HistoryTab from './components/HistoryTab';
 import DataStructureTab from './components/DataStructureTab';
-import SearchTab from './components/SearchTab';
+
 import { Database } from 'lucide-react';
 
-type TabType = 'upload' | 'answers' | 'exam' | 'history' | 'data' | 'search';
+type TabType = 'upload' | 'answers' | 'exam' | 'history' | 'data';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('upload');
@@ -19,7 +19,6 @@ const App: React.FC = () => {
     { id: 'exam',    label: 'Exam',         icon: <FileText size={20} /> },
     { id: 'history', label: 'History',      icon: <History size={20} /> },
     { id: 'data',    label: 'Answers Data', icon: <Database size={20} /> },
-    { id: 'search',  label: 'Search',       icon: <Search size={20} /> },
   ];
 
   return (
@@ -54,7 +53,6 @@ const App: React.FC = () => {
             {activeTab === 'exam' && <ExamTab />}
             {activeTab === 'history' && <HistoryTab />}
             {activeTab === 'data' && <DataStructureTab />}
-            {activeTab === 'search' && <SearchTab />}
           </div>
         </div>
       </div>
