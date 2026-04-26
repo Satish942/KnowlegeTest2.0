@@ -1,0 +1,151 @@
+﻿
+> knowledgetest@0.0.0 lint
+> eslint .
+
+
+C:\Users\Administrator\OnlyAPI\KnowlegeTest2.0\src\components\AnswersTab.tsx
+  32:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Administrator\OnlyAPI\KnowlegeTest2.0\src\components\AnswersTab.tsx:32:5
+  30 |
+  31 |   useEffect(() => {
+> 32 |     fetchDocuments();
+     |     ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  33 |   }, []);
+  34 |
+  35 |   const loadAnswers = async () => {  react-hooks/set-state-in-effect
+
+C:\Users\Administrator\OnlyAPI\KnowlegeTest2.0\src\components\DataStructureTab.tsx
+  47:5   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Administrator\OnlyAPI\KnowlegeTest2.0\src\components\DataStructureTab.tsx:47:5
+  45 |
+  46 |   useEffect(() => {
+> 47 |     fetchDocuments();
+     |     ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  48 |   }, []);
+  49 |
+  50 |   useEffect(() => {                                                                          react-hooks/set-state-in-effect
+  51:24  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Administrator\OnlyAPI\KnowlegeTest2.0\src\components\DataStructureTab.tsx:51:24
+  49 |
+  50 |   useEffect(() => {
+> 51 |     if (selectedDocId) fetchQuestions(selectedDocId);
+     |                        ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  52 |     else setQuestions([]);
+  53 |   }, [selectedDocId]);
+  54 |  react-hooks/set-state-in-effect
+
+C:\Users\Administrator\OnlyAPI\KnowlegeTest2.0\src\components\ExamTab.tsx
+  40:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Administrator\OnlyAPI\KnowlegeTest2.0\src\components\ExamTab.tsx:40:5
+  38 |
+  39 |   useEffect(() => {
+> 40 |     fetchDocuments();
+     |     ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  41 |   }, []);
+  42 |
+  43 |   const startExam = async () => {  react-hooks/set-state-in-effect
+
+C:\Users\Administrator\OnlyAPI\KnowlegeTest2.0\src\components\HistoryTab.tsx
+  36:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Administrator\OnlyAPI\KnowlegeTest2.0\src\components\HistoryTab.tsx:36:5
+  34 |
+  35 |   useEffect(() => {
+> 36 |     fetchHistory();
+     |     ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  37 |   }, []);
+  38 |
+  39 |   const clearHistory = async (id: string) => {  react-hooks/set-state-in-effect
+
+C:\Users\Administrator\OnlyAPI\KnowlegeTest2.0\src\components\KeysheetsTab.tsx
+  31:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Administrator\OnlyAPI\KnowlegeTest2.0\src\components\KeysheetsTab.tsx:31:5
+  29 |
+  30 |   useEffect(() => {
+> 31 |     fetchDocuments();
+     |     ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  32 |   }, []);
+  33 |
+  34 |   const loadKeysheet = async () => {  react-hooks/set-state-in-effect
+
+C:\Users\Administrator\OnlyAPI\KnowlegeTest2.0\src\components\SearchTab.tsx
+  42:21  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Administrator\OnlyAPI\KnowlegeTest2.0\src\components\SearchTab.tsx:42:21
+  40 |   };
+  41 |
+> 42 |   useEffect(() => { fetchDocuments(); }, []);
+     |                     ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  43 |
+  44 |   const handleSearch = async () => {
+  45 |     if (!query.trim()) return;  react-hooks/set-state-in-effect
+
+C:\Users\Administrator\OnlyAPI\KnowlegeTest2.0\src\components\UploadTab.tsx
+   69:129  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            @typescript-eslint/no-explicit-any
+   81:5    error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Administrator\OnlyAPI\KnowlegeTest2.0\src\components\UploadTab.tsx:81:5
+  79 |
+  80 |   useEffect(() => {
+> 81 |     fetchDocuments();
+     |     ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  82 |     fetchPresets();
+  83 |   }, []);
+  84 |  react-hooks/set-state-in-effect
+  163:19   error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            @typescript-eslint/no-explicit-any
+
+Γ£û 10 problems (10 errors, 0 warnings)
+

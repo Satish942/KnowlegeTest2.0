@@ -11,7 +11,13 @@ interface HistoryItem {
   total_questions: number;
   created_at: string;
   user_responses?: Record<string, string[]>;
-  questions_snapshot?: any[];
+  questions_snapshot?: {
+    id: string;
+    question_text: string;
+    options: Record<string, string>;
+    correct_answers: string[];
+    explanation?: string;
+  }[];
 }
 
 const HistoryTab: React.FC = () => {
@@ -36,7 +42,7 @@ const HistoryTab: React.FC = () => {
     fetchHistory();
   };
 
-  const normalizeAnswers = (ans: any): string[] => {
+  const normalizeAnswers = (ans: string | string[]): string[] => {
     const text = Array.isArray(ans) ? ans.join(',') : String(ans || '');
     return ((text.toUpperCase().match(/[A-Z0-9]+/g) || []) as string[])
       .filter(m => m.length === 1)

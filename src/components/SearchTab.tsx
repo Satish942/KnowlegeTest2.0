@@ -12,6 +12,12 @@ interface Question {
   document_id: string;
 }
 
+interface Document {
+  id: string;
+  name: string;
+  created_at: string;
+}
+
 const SEARCH_FIELDS = [
   { id: 'question',    label: 'Question' },
   { id: 'options',     label: 'Options' },
@@ -20,7 +26,7 @@ const SEARCH_FIELDS = [
 ];
 
 const SearchTab: React.FC = () => {
-  const [documents, setDocuments]     = useState<any[]>([]);
+  const [documents, setDocuments]     = useState<Document[]>([]);
   const [selectedDocId, setSelectedDocId] = useState<string>('');
   const [query, setQuery]             = useState('');
   const [searchIn, setSearchIn]       = useState<string[]>(['question', 'options', 'explanation']);
@@ -59,7 +65,7 @@ const SearchTab: React.FC = () => {
   };
 
 
-  const normalizeAnswers = (ans: any): string[] => {
+  const normalizeAnswers = (ans: string | string[]): string[] => {
     const text = Array.isArray(ans) ? ans.join(',') : String(ans || '');
     return ((text.toUpperCase().match(/[A-Z0-9]+/g) || []) as string[]).filter(m => m.length === 1).sort();
   };

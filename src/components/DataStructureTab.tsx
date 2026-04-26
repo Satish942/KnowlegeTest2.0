@@ -13,8 +13,14 @@ interface Question {
   explanation?: string;
 }
 
+interface Document {
+  id: string;
+  name: string;
+  created_at: string;
+}
+
 const DataStructureTab: React.FC = () => {
-  const [documents, setDocuments] = useState<any[]>([]);
+  const [documents, setDocuments] = useState<Document[]>([]);
   const [selectedDocId, setSelectedDocId] = useState<string>('');
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(false);

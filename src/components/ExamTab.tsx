@@ -13,8 +13,15 @@ interface Question {
   explanation?: string;
 }
 
+interface Document {
+  id: string;
+  name: string;
+  created_at: string;
+  questions?: { count: number }[];
+}
+
 const ExamTab: React.FC = () => {
-  const [documents, setDocuments] = useState<any[]>([]);
+  const [documents, setDocuments] = useState<Document[]>([]);
   const [selectedDocId, setSelectedDocId] = useState<string>('');
   const [selectedDocName, setSelectedDocName] = useState<string>('');
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -25,7 +32,7 @@ const ExamTab: React.FC = () => {
   const [totalAvailable, setTotalAvailable] = useState(0);
 
   const fetchDocuments = async () => {
-    const { data } = await supabase.from('documents').select('*, questions(count)') as any;
+    const { data } = await supabase.from('documents').select('*, questions(count)') as { data: Document[] | null };
     if (data) setDocuments(data);
   };
 
@@ -56,7 +63,7 @@ const ExamTab: React.FC = () => {
     });
   };
 
-  const normalizeAnswers = (ans: any): string[] => {
+  const normalizeAnswers = (ans: string | string[]): string[] => {
     const text = Array.isArray(ans) ? ans.join(',') : String(ans || '');
     return ((text.toUpperCase().match(/[A-Z0-9]+/g) || []) as string[]).filter(m => m.length === 1).map(s => s.trim()).filter(Boolean).sort();
   };

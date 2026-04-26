@@ -1,5 +1,4 @@
 import * as pdfjs from 'pdfjs-dist';
-// @ts-ignore
 import pdfWorker from 'pdfjs-dist/build/pdf.worker.mjs?url';
 import mammoth from 'mammoth';
 
@@ -69,17 +68,21 @@ export async function extractTextFromPDF(
     const content = await page.getTextContent();
     let lastY: number | undefined;
     let text = '';
-    const items = [...content.items].sort((a: any, b: any) => {
+    const items = [...content.items].sort((a, b) => {
+      const aT = (a as { transform: number[] }).transform;
+      const bT = (b as { transform: number[] }).transform;
+      if (!aT || !bT) return 0;
       // Sorting by Y (descending) then X (ascending) for natural reading order
-      if (Math.abs(b.transform[5] - a.transform[5]) > 2) return b.transform[5] - a.transform[5];
-      return a.transform[4] - b.transform[4];
+      if (Math.abs(bT[5] - aT[5]) > 2) return bT[5] - aT[5];
+      return aT[4] - bT[4];
     });
 
-    for (const item of items as any[]) {
-      if (lastY !== undefined && Math.abs(lastY - item.transform[5]) > 3) text += '\n';
+    for (const item of items) {
+      const it = item as { str: string; transform: number[] };
+      if (lastY !== undefined && Math.abs(lastY - it.transform[5]) > 3) text += '\n';
       else if (text !== '') text += ' ';
-      text += item.str;
-      lastY = item.transform[5];
+      text += it.str;
+      lastY = it.transform[5];
     }
 
     // ── Image extraction ──────────────────────────────────────────────────────
@@ -99,10 +102,10 @@ export async function extractTextFromPDF(
           // Cap images per page to prevent memory blowup
           for (const name of imgNames.slice(0, 10)) {
             try {
-              const imgObj: any = await Promise.race([
+              const imgObj = await Promise.race([
                 new Promise(resolve => page.objs.get(name, resolve)),
                 new Promise(resolve => setTimeout(() => resolve(null), 2000)),
-              ]);
+              ]) as { data: Uint8ClampedArray, width: number, height: number } | null;
               if (imgObj?.data && imgObj.width && imgObj.height) {
                 const dataUrl = rgbaToDataUrl(imgObj.data, imgObj.width, imgObj.height);
                 if (dataUrl) text += `\n[[IMG:${dataUrl}]]\n`;
@@ -149,7 +152,7 @@ export async function extractTextFromDocx(
 
   try {
     const htmlResult = await mammoth.convertToHtml({ arrayBuffer }, {
-      convertImage: mammoth.images.imgElement(async (image: any) => {
+      convertImage: mammoth.images.imgElement(async (image) => {
         const b64 = await image.read('base64');
         return {
           src: `data:${image.contentType};base64,${b64}`,

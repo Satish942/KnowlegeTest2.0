@@ -9,6 +9,7 @@ interface Document {
   id: string;
   name: string;
   created_at: string;
+  questions?: { count: number }[];
   count?: number;
 }
 
@@ -65,10 +66,10 @@ const UploadTab: React.FC = () => {
   };
 
   const fetchDocuments = async () => {
-    const { data, error } = await supabase.from('documents').select('*, questions(count)') as any;
+    const { data, error } = await supabase.from('documents').select('*, questions(count)') as { data: Document[] | null, error: any };
     if (error) console.error(error);
     else {
-      const docs = data.map((d: any) => ({
+      const docs = data.map((d: Document) => ({
         ...d,
         count: d.questions[0]?.count || 0
       }));
@@ -142,9 +143,10 @@ const UploadTab: React.FC = () => {
       fetchDocuments();
       fetchPresets();
       setTimeout(() => setStatus(''), 5000);
-    } catch (err: any) {
-      console.error(err);
-      setStatus(`Protocol Error: ${err.message}`);
+    } catch (err: unknown) {
+      const error = err as Error;
+      console.error(error);
+      setStatus(`Protocol Error: ${error.message}`);
     } finally {
       setLoading(false);
     }
