@@ -69,9 +69,9 @@ const UploadTab: React.FC = () => {
     const { data, error } = await supabase.from('documents').select('*, questions(count)') as { data: Document[] | null, error: any };
     if (error) console.error(error);
     else {
-      const docs = data.map((d: Document) => ({
+      const docs = (data || []).map((d: Document) => ({
         ...d,
-        count: d.questions[0]?.count || 0
+        count: d.questions?.[0]?.count || 0
       }));
       setDocuments(docs);
     }

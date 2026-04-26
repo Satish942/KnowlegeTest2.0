@@ -96,7 +96,7 @@ const ExamTab: React.FC = () => {
               const id = e.target.value; setSelectedDocId(id);
               const doc = documents.find(d => d.id === id); 
               setSelectedDocName(doc?.name || '');
-              const count = doc?.questions[0]?.count || 0;
+              const count = doc?.questions?.[0]?.count || 0;
               setTotalAvailable(count); setNumToTake(count);
             }}>
               <option value="">Choose evaluation source...</option>
