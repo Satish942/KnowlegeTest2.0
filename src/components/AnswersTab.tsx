@@ -17,14 +17,14 @@ const AnswersTab: React.FC = () => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    fetchDocuments();
-  }, []);
-
   const fetchDocuments = async () => {
     const { data } = await supabase.from('documents').select('*');
     if (data) setDocuments(data);
   };
+
+  useEffect(() => {
+    fetchDocuments();
+  }, []);
 
   const loadAnswers = async () => {
     if (!selectedDocId) return;
@@ -36,7 +36,7 @@ const AnswersTab: React.FC = () => {
 
   const normalizeAnswers = (ans: any): string[] => {
     const text = Array.isArray(ans) ? ans.join(',') : String(ans || '');
-    return (text.toUpperCase().match(/[A-Z0-9]+/g) || []).filter(m => m.length === 1).map(s => s.trim()).filter(Boolean).sort();
+    return ((text.toUpperCase().match(/[A-Z0-9]+/g) || []) as string[]).filter(m => m.length === 1).map(s => s.trim()).filter(Boolean).sort();
   };
 
   return (

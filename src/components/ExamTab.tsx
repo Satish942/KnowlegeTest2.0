@@ -24,14 +24,14 @@ const ExamTab: React.FC = () => {
   const [numToTake, setNumToTake] = useState<number>(0);
   const [totalAvailable, setTotalAvailable] = useState(0);
 
-  useEffect(() => {
-    fetchDocuments();
-  }, []);
-
   const fetchDocuments = async () => {
     const { data } = await supabase.from('documents').select('*, questions(count)') as any;
     if (data) setDocuments(data);
   };
+
+  useEffect(() => {
+    fetchDocuments();
+  }, []);
 
   const startExam = async () => {
     if (!selectedDocId) return;
@@ -58,7 +58,7 @@ const ExamTab: React.FC = () => {
 
   const normalizeAnswers = (ans: any): string[] => {
     const text = Array.isArray(ans) ? ans.join(',') : String(ans || '');
-    return (text.toUpperCase().match(/[A-Z0-9]+/g) || []).filter(m => m.length === 1).map(s => s.trim()).filter(Boolean).sort();
+    return ((text.toUpperCase().match(/[A-Z0-9]+/g) || []) as string[]).filter(m => m.length === 1).map(s => s.trim()).filter(Boolean).sort();
   };
 
   const submitExam = async () => {

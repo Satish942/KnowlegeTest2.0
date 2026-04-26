@@ -327,7 +327,7 @@ export function parseExamText(text: string, config: ParserConfig): ParsedQuestio
     : `Answer[s]?\\s*Key|Correct\\s*Answer[s]?`;
   const answerKeySection = cleanText.match(new RegExp(`(?:${ansKeyPattern})([\\s\\S]*)$`, 'i'));
   if (answerKeySection) {
-    const keyRegex = /(?:\n|^|\s)(\d+)\s*[:\.]?\s*([A-F](?:[\s,&]+[A-F]*)*)/gi;
+    const keyRegex = /(?:\n|^|\s)(\d+)\s*[:.]?\s*([A-F](?:[\s,&]+[A-F]*)*)/gi;
     let km: RegExpExecArray | null;
     while ((km = keyRegex.exec(answerKeySection[1])) !== null) {
       const qn = parseInt(km[1]);
@@ -442,7 +442,7 @@ export function parseExamText(text: string, config: ParserConfig): ParsedQuestio
     const firstOptIdx = optMarkers.length > 0 ? optMarkers[0].index : block.length;
     let questionText  = block.substring(0, firstOptIdx).replace(qStripRegex, '').trim();
     // Strip any redundant leading "QUESTION n" / "Question n" / "Q n" left after marker removal
-    questionText = questionText.replace(/^(?:QUESTION|Question|Q)\s*\d*\s*[:\.\-]?\s*/i, '').trim();
+    questionText = questionText.replace(/^(?:QUESTION|Question|Q)\s*\d*\s*[:.-]?\s*/i, '').trim();
 
     // Skip questions with no detected answer — don't fabricate True/False defaults
     if (questionText && correctAnswers.length > 0) {

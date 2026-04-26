@@ -21,15 +21,6 @@ const DataStructureTab: React.FC = () => {
   const [copyStatus, setCopyStatus] = useState<'idle' | 'copied'>('idle');
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
 
-  useEffect(() => {
-    fetchDocuments();
-  }, []);
-
-  useEffect(() => {
-    if (selectedDocId) fetchQuestions(selectedDocId);
-    else setQuestions([]);
-  }, [selectedDocId]);
-
   const fetchDocuments = async () => {
     const { data } = await supabase.from('documents').select('*');
     if (data) setDocuments(data);
@@ -45,6 +36,15 @@ const DataStructureTab: React.FC = () => {
     if (data) setQuestions(data);
     setLoading(false);
   };
+
+  useEffect(() => {
+    fetchDocuments();
+  }, []);
+
+  useEffect(() => {
+    if (selectedDocId) fetchQuestions(selectedDocId);
+    else setQuestions([]);
+  }, [selectedDocId]);
 
   const copyToClipboard = () => {
     const dataString = JSON.stringify(questions, null, 2);

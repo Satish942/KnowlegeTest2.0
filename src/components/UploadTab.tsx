@@ -39,11 +39,6 @@ const UploadTab: React.FC = () => {
     references: ['Reference:', 'URL:']
   });
 
-  useEffect(() => {
-    fetchDocuments();
-    fetchPresets();
-  }, []);
-
   const fetchPresets = async () => {
     const { data } = await supabase.from('parser_presets').select('*').order('created_at', { ascending: false }).limit(50);
     if (data && data.length > 0) {
@@ -80,6 +75,11 @@ const UploadTab: React.FC = () => {
       setDocuments(docs);
     }
   };
+
+  useEffect(() => {
+    fetchDocuments();
+    fetchPresets();
+  }, []);
 
   const handleUpload = async () => {
     if (!file) return;

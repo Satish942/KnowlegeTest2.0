@@ -18,10 +18,6 @@ const HistoryTab: React.FC = () => {
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchHistory();
-  }, []);
-
   const fetchHistory = async () => {
     const { data } = await supabase
       .from('exam_history')
@@ -29,6 +25,10 @@ const HistoryTab: React.FC = () => {
       .order('created_at', { ascending: false });
     if (data) setHistory(data);
   };
+
+  useEffect(() => {
+    fetchHistory();
+  }, []);
 
   const clearHistory = async (id: string) => {
     if (!confirm('Purge this record?')) return;
@@ -38,7 +38,7 @@ const HistoryTab: React.FC = () => {
 
   const normalizeAnswers = (ans: any): string[] => {
     const text = Array.isArray(ans) ? ans.join(',') : String(ans || '');
-    return (text.toUpperCase().match(/[A-Z0-9]+/g) || [])
+    return ((text.toUpperCase().match(/[A-Z0-9]+/g) || []) as string[])
       .filter(m => m.length === 1)
       .map(s => s.trim())
       .filter(Boolean)

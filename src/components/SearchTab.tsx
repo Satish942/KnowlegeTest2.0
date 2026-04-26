@@ -28,12 +28,12 @@ const SearchTab: React.FC = () => {
   const [loading, setLoading]         = useState(false);
   const [searched, setSearched]       = useState(false);
 
-  useEffect(() => { fetchDocuments(); }, []);
-
   const fetchDocuments = async () => {
     const { data } = await supabase.from('documents').select('*');
     if (data) setDocuments(data);
   };
+
+  useEffect(() => { fetchDocuments(); }, []);
 
   const handleSearch = async () => {
     if (!query.trim()) return;
@@ -58,23 +58,10 @@ const SearchTab: React.FC = () => {
     setLoading(false);
   };
 
-  const highlight = (text: string) => {
-    if (!query.trim() || !text) return <>{text}</>;
-    const parts = text.split(new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'));
-    return (
-      <>
-        {parts.map((part, i) =>
-          part.toLowerCase() === query.toLowerCase()
-            ? <mark key={i} className="search-highlight">{part}</mark>
-            : part
-        )}
-      </>
-    );
-  };
 
   const normalizeAnswers = (ans: any): string[] => {
     const text = Array.isArray(ans) ? ans.join(',') : String(ans || '');
-    return (text.toUpperCase().match(/[A-Z0-9]+/g) || []).filter(m => m.length === 1).sort();
+    return ((text.toUpperCase().match(/[A-Z0-9]+/g) || []) as string[]).filter(m => m.length === 1).sort();
   };
 
   const toggleField = (field: string) => {
