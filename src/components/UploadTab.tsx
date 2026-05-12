@@ -146,7 +146,12 @@ const UploadTab: React.FC = () => {
     } catch (err: unknown) {
       const error = err as Error;
       console.error(error);
-      setStatus(`Protocol Error: ${error.message}`);
+      const base = error.message || String(err);
+      const hint =
+        base === 'Failed to fetch' || base.includes('Load failed')
+          ? ' (Supabase unreachable: verify .env URL/key, project not paused, VPN/firewall, then restart dev server.)'
+          : '';
+      setStatus(`Protocol Error: ${base}${hint}`);
     } finally {
       setLoading(false);
     }
