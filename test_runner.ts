@@ -1,11 +1,12 @@
-import * as pdfjs from 'pdfjs-dist';
-import pdfWorker from 'pdfjs-dist/build/pdf.worker.mjs?url';
-import mammoth from 'mammoth';
+
+
+
+
 
 // Set up PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = pdfWorker;
 
-export interface ParsedQuestion {
+
+interface ParsedQuestion {
   question_text: string;
   options: Record<string, string>;
   correct_answers: string[];
@@ -16,7 +17,7 @@ export interface ParsedQuestion {
   chapter?: string;
 }
 
-export interface ParserConfig {
+interface ParserConfig {
   questionMarker: string;
   optionMarker: string;
   answerStartMarker: string;
@@ -40,7 +41,7 @@ function rgbaToDataUrl(data: Uint8ClampedArray | Uint8Array, width: number, heig
   return canvas.toDataURL('image/png');
 }
 
-export async function extractTextFromPDF(
+async function extractTextFromPDF(
   file: File, 
   config?: ParserConfig,
   onProgress?: (current: number, total: number) => void
@@ -48,7 +49,7 @@ export async function extractTextFromPDF(
   const arrayBuffer = await file.arrayBuffer();
   // Ensure worker is absolutely set
   if (!pdfjs.GlobalWorkerOptions.workerSrc) {
-    pdfjs.GlobalWorkerOptions.workerSrc = pdfWorker;
+    
   }
 
   const pdf = await pdfjs.getDocument({ 
@@ -143,7 +144,7 @@ function htmlToMarkedText(html: string): string {
     .trim();
 }
 
-export async function extractTextFromDocx(
+async function extractTextFromDocx(
   file: File,
   onProgress?: (current: number, total: number) => void
 ): Promise<string> {
@@ -325,7 +326,7 @@ function detectMultiSignals(text: string): { isMulti: boolean; maxSelections: nu
 
 // ─── Main parser ──────────────────────────────────────────────────────────────
 
-export function parseExamText(text: string, config: ParserConfig): ParsedQuestion[] {
+function parseExamText(text: string, config: ParserConfig): ParsedQuestion[] {
   const questions: ParsedQuestion[] = [];
   const cleanText = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
 
@@ -509,3 +510,39 @@ export function parseExamText(text: string, config: ParserConfig): ParsedQuestio
 
   return questions;
 }
+
+
+const text = `
+1. What is the capital of France?
+A. London
+B. Berlin
+C. Paris
+D. Madrid
+Answer: C
+
+2. Which are primary colors?
+A. Red
+B. Green
+C. Blue
+D. Yellow
+Answer: AC
+
+3. Select the correct options.
+A: One
+B: Two
+C: Three
+Answer: ABC
+`;
+
+const config = {
+  questionMarker: 'n.',
+  optionMarker: 'A.',
+  answerStartMarker: 'Answer:',
+  explanationMarker: 'Explanation:',
+  referenceUrlMarker: 'Reference:',
+  pickReferenceUrl: false,
+  haveChapters: false,
+  extractImages: false
+};
+
+console.log(JSON.stringify(parseExamText(text, config), null, 2));
