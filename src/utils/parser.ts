@@ -171,11 +171,6 @@ export async function extractTextFromDocx(
 
 // ─── Pattern helpers ──────────────────────────────────────────────────────────
 
-/** Extract the delimiter char (: ) .) from a marker pattern like "n:", "A)", "n." */
-function extractDelim(marker: string, after: string): string {
-  const m = marker.match(new RegExp(`${after}([:\\)\\.])`));
-  return m ? m[1] : '.';
-}
 
 function escapeRx(s: string) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -190,7 +185,8 @@ function escapedDelim(d: string) {
  * Uses multiline ^ so it matches the start of ANY line — much more reliable
  * than the old (?:\n|^|\s{2,}) prefix.
  *
- *  "n. Question" / "n." / "n)" / "n:"  → numeric placeholder  → 1.  2.  3. …
+ *  "Question: n"                       → prefix + number       → Question: 1
+ *  "n. Question" / "n." / "n)" / "n:"  → numeric placeholder   → 1.  2.  3. …
  *  "Q" / any other string              → string prefix         → Q1. Q 2. …
  *  ""                                  → bare-number fallback  → 1.  2.  3. …
  */
@@ -203,20 +199,28 @@ function buildQuestionRegex(marker: string): { regex: RegExp; stripRegex: RegExp
       stripRegex: /^\s*\d+\.\s*/,
     };
   }
+
   if (/\bn\b/.test(m)) {
-    // n is a numeric placeholder — extract the delimiter that follows n
-    const d = extractDelim(m, 'n');
-    const ed = escapedDelim(d);
+    const parts = m.split(/\bn\b/);
+    const prefix = parts[0];
+    const suffix = parts.slice(1).join('n');
+    
+    const escapedPrefix = prefix ? escapeRx(prefix).replace(/\\ /g, '\\s*') : '';
+    
+    const dMatch = suffix.match(/^([:\)\.])/);
+    const ed = dMatch ? escapedDelim(dMatch[1]) : '[:\\)\\.]?';
+    
     return {
-      regex: new RegExp(`^\\s*(\\d+)${ed}\\s*`, 'gim'),
-      stripRegex: new RegExp(`^\\s*\\d+${ed}\\s*`),
+      regex: new RegExp(`^\\s*${escapedPrefix}(\\d+)${ed}\\s*`, 'gim'),
+      stripRegex: new RegExp(`^\\s*${escapedPrefix}\\d+${ed}\\s*`, 'i'),
     };
   }
+  
   // String prefix like "Q"
-  const ep = escapeRx(m);
+  const ep = escapeRx(m).replace(/\\ /g, '\\s*');
   return {
-    regex: new RegExp(`^\\s*${ep}\\s*(\\d+)[\\)\\.:][\\s]?`, 'gim'),
-    stripRegex: new RegExp(`^\\s*${ep}\\s*\\d+[\\)\\.:][\\s]?`),
+    regex: new RegExp(`^\\s*${ep}\\s*(\\d+)[\\)\\.:]?\\s*`, 'gim'),
+    stripRegex: new RegExp(`^\\s*${ep}\\s*\\d+[\\)\\.:]?\\s*`, 'i'),
   };
 }
 
@@ -224,32 +228,57 @@ function buildQuestionRegex(marker: string): { regex: RegExp; stripRegex: RegExp
  * Build option-detection regex from the Option String Starts field.
  * Also uses multiline ^ so only actual line-start options are matched.
  *
+ *  "Option: A"         → prefix + alpha   → Option: A
  *  "n:" / "n." / "n)"  → numeric options  → 1:  2:  3: …
  *  "A:" / "A." / "A)"  → alpha options    → A:  B:  C: …
  *  ""                  → default A–F with ) or .
  */
 function buildOptionRegex(marker: string): { regex: RegExp; stripRegex: RegExp } {
   const m = marker.trim();
+  if (!m) {
+    // Default: A–F followed by ) or .
+    return {
+      regex: /^\s*([A-F])[).]\s*/gim,
+      stripRegex: /^\s*[A-F][).]\s*/,
+    };
+  }
+
   if (/\bn\b/.test(m)) {
-    const d = extractDelim(m, 'n');
-    const ed = escapedDelim(d);
+    const parts = m.split(/\bn\b/);
+    const prefix = parts[0];
+    const suffix = parts.slice(1).join('n');
+    const escapedPrefix = prefix ? escapeRx(prefix).replace(/\\ /g, '\\s*') : '';
+    
+    const dMatch = suffix.match(/^([:\)\.])/);
+    const ed = dMatch ? escapedDelim(dMatch[1]) : '[:\\)\\.]?';
+    
     return {
-      regex: new RegExp(`^\\s*(\\d+)${ed}\\s*`, 'gim'),
-      stripRegex: new RegExp(`^\\s*\\d+${ed}\\s*`),
+      regex: new RegExp(`^\\s*${escapedPrefix}(\\d+)${ed}\\s*`, 'gim'),
+      stripRegex: new RegExp(`^\\s*${escapedPrefix}\\d+${ed}\\s*`, 'i'),
     };
   }
+  
   if (/\b[A-Z]\b/.test(m)) {
-    const d = extractDelim(m, '[A-Z]');
-    const ed = escapedDelim(d);
+    const matchStr = m.match(/\b([A-Z])\b/)![0];
+    const parts = m.split(new RegExp(`\\b${matchStr}\\b`));
+    const prefix = parts[0];
+    const suffix = parts.slice(1).join(matchStr);
+    const escapedPrefix = prefix ? escapeRx(prefix).replace(/\\ /g, '\\s*') : '';
+    
+    const dMatch = suffix.match(/^([:\)\.])/);
+    const ed = dMatch ? escapedDelim(dMatch[1]) : '[:\\)\\.]?';
+    
     return {
-      regex: new RegExp(`^\\s*([A-Z])${ed}\\s*`, 'gim'),
-      stripRegex: new RegExp(`^\\s*[A-Z]${ed}\\s*`),
+      regex: new RegExp(`^\\s*${escapedPrefix}([A-Z])${ed}\\s*`, 'gim'),
+      stripRegex: new RegExp(`^\\s*${escapedPrefix}[A-Z]${ed}\\s*`, 'i'),
     };
   }
-  // Default: A–F followed by ) or .
+
+  // Fallback if they just typed a prefix like "Option"
+  const ep = escapeRx(m).replace(/\\ /g, '\\s*');
   return {
-    regex: /^\s*([A-F])[).]\s*/gim,
-    stripRegex: /^\s*[A-F][).]\s*/,
+    regex: new RegExp(`^\\s*${ep}\\s*([A-Z])[\\)\\.:]?\\s*`, 'gim'),
+    stripRegex: new RegExp(`^\\s*${ep}\\s*[A-Z][\\)\\.:]?\\s*`, 'i'),
   };
 }
 
