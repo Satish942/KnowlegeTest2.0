@@ -42,7 +42,7 @@ const ExamTab: React.FC = () => {
 
   const startExam = async () => {
     if (!selectedDocId) return;
-    const { data } = await supabase.from('questions').select('*').eq('document_id', selectedDocId);
+    const { data } = await supabase.from('questions').select('*').eq('document_id', selectedDocId).limit(10000);
     if (data && data.length > 0) {
       const selected = [...data].sort(() => Math.random() - 0.5).slice(0, numToTake || data.length);
       setQuestions(selected);

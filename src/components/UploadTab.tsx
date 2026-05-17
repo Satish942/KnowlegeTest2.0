@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Upload as UploadIcon, Trash2, Loader2, Database, Settings2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { extractTextFromPDF, extractTextFromDocx, parseExamText } from '../utils/parser';
+import { extractTextFromPDF, extractTextFromDocx, extractTextFromTxt, parseExamText } from '../utils/parser';
 import type { ParserConfig } from '../utils/parser';
 import { motion } from 'framer-motion';
 
@@ -97,6 +97,8 @@ const UploadTab: React.FC = () => {
         text = await extractTextFromPDF(file, config, updateProgress);
       } else if (file.name.endsWith('.docx')) {
         text = await extractTextFromDocx(file, updateProgress);
+      } else if (file.name.endsWith('.txt')) {
+        text = await extractTextFromTxt(file);
       } else {
         throw new Error('Unsupported format');
       }
@@ -319,7 +321,7 @@ const UploadTab: React.FC = () => {
             <div className="text-center w-full px-2 mb-8">
               <h3 className="text-2xl font-bold text-white mb-6 tracking-tight">{file ? file.name : 'Ingestion Ingest Protocol'}</h3>
               <p className="text-[#8ca1be] text-[15px] leading-relaxed">
-                {file ? "Assessment source locked. Begin extraction cycle." : "Drop your PDF or DOCX assessment materials here or click to initialize manual selection."}
+                {file ? "Assessment source locked. Begin extraction cycle." : "Drop your PDF, DOCX or TXT assessment materials here or click to initialize manual selection."}
               </p>
             </div>
             
@@ -328,7 +330,7 @@ const UploadTab: React.FC = () => {
                  type="file" 
                  id="file-upload" 
                  className="text-white text-sm file:mr-3 file:py-1.5 file:px-3 file:border-0 file:text-sm file:bg-white file:text-black cursor-pointer" 
-                 accept=".pdf,.docx" 
+                 accept=".pdf,.docx,.txt" 
                  onChange={(e) => setFile(e.target.files?.[0] || null)} 
               />
               

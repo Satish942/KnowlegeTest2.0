@@ -169,6 +169,10 @@ export async function extractTextFromDocx(
   }
 }
 
+export async function extractTextFromTxt(file: File): Promise<string> {
+  return await file.text();
+}
+
 // ─── Pattern helpers ──────────────────────────────────────────────────────────
 
 
