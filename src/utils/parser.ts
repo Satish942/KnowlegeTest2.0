@@ -51,10 +51,18 @@ export async function extractTextFromPDF(
     pdfjs.GlobalWorkerOptions.workerSrc = pdfWorker;
   }
 
-  const pdf = await pdfjs.getDocument({ 
-    data: arrayBuffer,
-    stopAtErrors: false,
-  }).promise;
+  let pdf;
+  try {
+    pdf = await pdfjs.getDocument({ 
+      data: arrayBuffer,
+      stopAtErrors: false,
+    }).promise;
+  } catch (err: any) {
+    if (err.message?.includes('XRef') || err.message?.includes('format')) {
+      throw new Error("PDF structure is corrupted. Please open the file and 'Print to PDF' to repair it before uploading.");
+    }
+    throw err;
+  }
   
   let fullText = '';
   const numPages = pdf.numPages;
