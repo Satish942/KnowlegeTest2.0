@@ -205,7 +205,7 @@ function buildQuestionRegex(marker: string): { regex: RegExp; stripRegex: RegExp
     const prefix = parts[0];
     const suffix = parts.slice(1).join('n');
     
-    const escapedPrefix = prefix ? escapeRx(prefix).replace(/\\ /g, '\\s*') : '';
+    const escapedPrefix = prefix ? escapeRx(prefix).replace(/ /g, '\\s*') : '';
     
     const dMatch = suffix.match(/^([:\)\.])/);
     const ed = dMatch ? escapedDelim(dMatch[1]) : '[:\\)\\.]?';
@@ -217,7 +217,7 @@ function buildQuestionRegex(marker: string): { regex: RegExp; stripRegex: RegExp
   }
   
   // String prefix like "Q"
-  const ep = escapeRx(m).replace(/\\ /g, '\\s*');
+  const ep = escapeRx(m).replace(/ /g, '\\s*');
   return {
     regex: new RegExp(`^\\s*${ep}\\s*(\\d+)[\\)\\.:]?\\s*`, 'gim'),
     stripRegex: new RegExp(`^\\s*${ep}\\s*\\d+[\\)\\.:]?\\s*`, 'i'),
@@ -247,7 +247,7 @@ function buildOptionRegex(marker: string): { regex: RegExp; stripRegex: RegExp }
     const parts = m.split(/\bn\b/);
     const prefix = parts[0];
     const suffix = parts.slice(1).join('n');
-    const escapedPrefix = prefix ? escapeRx(prefix).replace(/\\ /g, '\\s*') : '';
+    const escapedPrefix = prefix ? escapeRx(prefix).replace(/ /g, '\\s*') : '';
     
     const dMatch = suffix.match(/^([:\)\.])/);
     const ed = dMatch ? escapedDelim(dMatch[1]) : '[:\\)\\.]?';
@@ -263,7 +263,7 @@ function buildOptionRegex(marker: string): { regex: RegExp; stripRegex: RegExp }
     const parts = m.split(new RegExp(`\\b${matchStr}\\b`));
     const prefix = parts[0];
     const suffix = parts.slice(1).join(matchStr);
-    const escapedPrefix = prefix ? escapeRx(prefix).replace(/\\ /g, '\\s*') : '';
+    const escapedPrefix = prefix ? escapeRx(prefix).replace(/ /g, '\\s*') : '';
     
     const dMatch = suffix.match(/^([:\)\.])/);
     const ed = dMatch ? escapedDelim(dMatch[1]) : '[:\\)\\.]?';
@@ -275,7 +275,7 @@ function buildOptionRegex(marker: string): { regex: RegExp; stripRegex: RegExp }
   }
 
   // Fallback if they just typed a prefix like "Option"
-  const ep = escapeRx(m).replace(/\\ /g, '\\s*');
+  const ep = escapeRx(m).replace(/ /g, '\\s*');
   return {
     regex: new RegExp(`^\\s*${ep}\\s*([A-Z])[\\)\\.:]?\\s*`, 'gim'),
     stripRegex: new RegExp(`^\\s*${ep}\\s*[A-Z][\\)\\.:]?\\s*`, 'i'),

@@ -189,10 +189,10 @@ const UploadTab: React.FC = () => {
   };
 
   return (
-    <div className="space-y-12 animate-fade-in p-4 sm:p-0">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div className="animate-fade-in p-4 sm:p-0">
+      <div className="grid grid-cols-5 gap-6">
         {/* Configuration Panel */}
-        <div className="lg:col-span-1 space-y-6">
+        <div className="col-span-1 space-y-6">
           <div className="config-panel">
             <div className="flex items-center gap-3 mb-8">
               <Settings2 size={24} className="text-indigo-400" />
@@ -302,22 +302,22 @@ const UploadTab: React.FC = () => {
         </div>
 
         {/* Drop Zone */}
-        <div className="lg:col-span-2">
+        <div className="col-span-1">
           <div 
             onDragEnter={onDrag} onDragLeave={onDrag} onDragOver={onDrag} onDrop={onDrop}
-            className={`relative flex flex-col items-center justify-center h-full p-16 rounded-[3rem] transition-all duration-500 ${dragActive ? 'dropzone-active' : 'dropzone-inactive'}`}
+            className={`relative flex flex-col items-center justify-center h-full p-6 sm:p-8 rounded-[2rem] transition-all duration-500 ${dragActive ? 'dropzone-active' : 'dropzone-inactive'}`}
           >
-            <div className={`p-8 rounded-3xl mb-8 group transition-all duration-500 ${dragActive ? 'bg-indigo-500 shadow-2xl shadow-indigo-500/40' : 'bg-slate-900 border border-white/5'}`}>
-              <UploadIcon size={64} className={`${dragActive ? 'text-white' : 'text-indigo-400'} group-hover:scale-110 transition-transform`} />
+            <div className={`p-4 rounded-2xl mb-6 group transition-all duration-500 ${dragActive ? 'bg-indigo-500 shadow-xl shadow-indigo-500/40' : 'bg-slate-900 border border-white/5'}`}>
+              <UploadIcon size={48} className={`${dragActive ? 'text-white' : 'text-indigo-400'} group-hover:scale-110 transition-transform`} />
             </div>
-            <div className="text-center space-y-4 max-w-md">
-              <h3 className="text-3xl font-black text-white italic">{file ? file.name : 'Ingestion Ingest Protocol'}</h3>
-              <p className="text-muted text-sm font-medium leading-relaxed">
-                {file ? "Assessment source locked. Begin extraction cycle." : "Drop your PDF or DOCX assessment materials here or click to initialize manual selection."}
+            <div className="text-center space-y-3 w-full">
+              <h3 className="text-xl font-black text-white italic leading-tight">{file ? file.name : 'Ingestion Protocol'}</h3>
+              <p className="text-muted text-xs font-medium leading-relaxed">
+                {file ? "Source locked." : "Drop PDF/DOCX here."}
               </p>
             </div>
             
-            <div className="mt-12 flex flex-col items-center gap-6 w-full max-w-xs">
+            <div className="mt-8 flex flex-col items-center gap-4 w-full">
               <input type="file" id="file-upload" className="hidden" accept=".pdf,.docx" onChange={(e) => setFile(e.target.files?.[0] || null)} />
               {!file ? (
                 <label htmlFor="file-upload" className="primary-btn w-full text-center py-4 cursor-pointer">SELECT ASSESSMENT</label>
@@ -335,38 +335,41 @@ const UploadTab: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="space-y-8 pt-12">
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-6">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-indigo-500/10 rounded-2xl border border-indigo-500/20">
+        {/* Active Knowledge Base */}
+        <div className="col-span-3 space-y-6">
+          <div className="config-panel h-full flex flex-col max-h-[800px]">
+            <div className="flex items-center gap-3 mb-6">
               <Database size={24} className="text-indigo-400" />
+              <div className="overflow-hidden">
+                <h3 className="text-xl font-black text-white uppercase italic tracking-tight truncate">Knowledge Base</h3>
+                <p className="text-[10px] font-black text-muted tracking-widest uppercase">{documents.length} Matrices</p>
+              </div>
             </div>
-            <div>
-              <h3 className="text-2xl font-black text-white uppercase italic tracking-tight">Active Knowledge Base</h3>
-              <p className="text-[10px] font-black text-muted tracking-widest uppercase">{documents.length} Matrices Archived</p>
+
+            <div className="flex-1 overflow-y-auto space-y-4 pr-2">
+              {documents.length === 0 ? (
+                <div className="text-center text-slate-500 text-sm py-8 font-medium italic">No matrices archived yet.</div>
+              ) : (
+                documents.map((doc) => (
+                  <motion.div layout key={doc.id} className="p-4 bg-slate-900/80 border border-white/5 rounded-2xl flex justify-between items-center group hover:border-indigo-500/30 transition-all duration-300">
+                    <div className="flex items-center gap-3 overflow-hidden">
+                      <div className="w-10 h-10 shrink-0 rounded-xl bg-indigo-500/5 border border-indigo-500/10 flex items-center justify-center">
+                        <FileCode size={18} className="text-indigo-400/60" />
+                      </div>
+                      <div className="overflow-hidden">
+                        <p className="font-bold text-white text-sm truncate tracking-tight">{doc.name}</p>
+                        <p className="text-[9px] font-black text-indigo-400/80 uppercase tracking-widest">{doc.count} Clusters</p>
+                      </div>
+                    </div>
+                    <button onClick={(e) => deleteDocument(doc.id, e)} className="w-8 h-8 shrink-0 flex items-center justify-center bg-white/5 hover:bg-rose-500/20 text-slate-500 hover:text-rose-400 rounded-lg transition-all border border-transparent">
+                      <Trash2 size={14} />
+                    </button>
+                  </motion.div>
+                ))
+              )}
             </div>
           </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {documents.map((doc) => (
-            <motion.div layout key={doc.id} className="p-6 bg-slate-900/60 border border-white/5 rounded-3xl flex justify-between items-center group hover:border-indigo-500/30 transition-all duration-300">
-              <div className="flex items-center gap-4 overflow-hidden">
-                <div className="w-12 h-12 rounded-2xl bg-indigo-500/5 border border-indigo-500/10 flex items-center justify-center">
-                  <FileCode size={22} className="text-indigo-400/60" />
-                </div>
-                <div className="overflow-hidden">
-                  <p className="font-bold text-white truncate max-w-[140px] tracking-tight">{doc.name}</p>
-                  <p className="text-[10px] font-black text-muted uppercase tracking-widest">{doc.count} Clusters</p>
-                </div>
-              </div>
-              <button onClick={(e) => deleteDocument(doc.id, e)} className="w-10 h-10 flex items-center justify-center bg-white/5 hover:bg-rose-500/20 text-slate-500 hover:text-rose-400 rounded-xl transition-all border border-transparent">
-                <Trash2 size={16} />
-              </button>
-            </motion.div>
-          ))}
         </div>
       </div>
     </div>
