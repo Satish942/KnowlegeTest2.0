@@ -2,18 +2,16 @@ import React from 'react';
 
 interface Props {
   text: string;
-  searchTerm?: string; // optional: highlight a search term
+  searchTerm?: string;
 }
 
-/** Splits explanation text on [[IMG:...]] markers and renders text + images. */
+/** Splits explanation text on [[IMG:...]] markers, then renders text with proper newline handling. */
 const ExplanationRenderer: React.FC<Props> = ({ text, searchTerm }) => {
   if (!text) return null;
 
-  const parts = text.split(/(\[\[IMG:[^\]]*\]\])/g);
-
   const highlight = (str: string): React.ReactNode => {
     if (!searchTerm?.trim()) return str;
-    const escaped = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const escaped = searchTerm.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&');
     const segments = str.split(new RegExp(`(${escaped})`, 'gi'));
     return segments.map((seg, i) =>
       seg.toLowerCase() === searchTerm.toLowerCase()
@@ -21,6 +19,9 @@ const ExplanationRenderer: React.FC<Props> = ({ text, searchTerm }) => {
         : seg
     );
   };
+
+  // Split on image markers first
+  const parts = text.split(/(\[\[IMG:[^\]]*\]\])/g);
 
   return (
     <>
@@ -36,7 +37,17 @@ const ExplanationRenderer: React.FC<Props> = ({ text, searchTerm }) => {
             />
           );
         }
-        return <span key={i}>{highlight(part)}</span>;
+        // Split text on newlines and render each line as a paragraph
+        const lines = part.split(/\r?\n/);
+        return (
+          <div key={i} className="text-left max-w-3xl">
+            {lines.map((line, j) => (
+              <p key={j} className="mb-2">
+                {highlight(line)}
+              </p>
+            ))}
+          </div>
+        );
       })}
     </>
   );

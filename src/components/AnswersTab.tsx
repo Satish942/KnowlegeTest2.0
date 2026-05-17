@@ -91,9 +91,14 @@ const AnswersTab: React.FC = () => {
                 })}
               </div>
               {q.explanation && (
-                <div className="p-6 bg-slate-900 border border-white/5 rounded-2xl text-quiz text-slate-400 text-left">
-                  <span className="text-[9px] font-black text-emerald-500 block mb-1 uppercase tracking-widest">Logic Breakdown</span>
-                  <ExplanationRenderer text={q.explanation} />
+                <div className="p-6 bg-[#0f121f] border border-emerald-500/20 rounded-2xl text-left">
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="w-1 h-5 bg-emerald-500 rounded-full"></div>
+                    <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Logic Breakdown</span>
+                  </div>
+                  <div className="text-sm text-slate-300 leading-relaxed">
+                    <ExplanationRenderer text={q.explanation} />
+                  </div>
                 </div>
               )}
             </div>
