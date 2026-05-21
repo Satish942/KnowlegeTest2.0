@@ -207,7 +207,7 @@ function buildQuestionRegex(marker: string): { regex: RegExp; stripRegex: RegExp
   if (!m) {
     // No marker: match "1." / "2." at the start of any line (optional leading spaces)
     return {
-      regex: /^\s*(\d+)\.\s*/gim,
+      regex: /(?:^|\s+)(\d+)\.\s*/gi,
       stripRegex: /^\s*\d+\.\s*/,
     };
   }
@@ -223,7 +223,7 @@ function buildQuestionRegex(marker: string): { regex: RegExp; stripRegex: RegExp
     const ed = dMatch ? escapedDelim(dMatch[1]) : '[:\\)\\.]?';
     
     return {
-      regex: new RegExp(`^\\s*${escapedPrefix}(\\d+)${ed}\\s*`, 'gim'),
+      regex: new RegExp(`(?:^|\\s+)${escapedPrefix}(\\d+)${ed}\\s*`, 'gi'),
       stripRegex: new RegExp(`^\\s*${escapedPrefix}\\d+${ed}\\s*`, 'i'),
     };
   }
@@ -231,7 +231,7 @@ function buildQuestionRegex(marker: string): { regex: RegExp; stripRegex: RegExp
   // String prefix like "Q"
   const ep = escapeRx(m).replace(/ /g, '\\s*');
   return {
-    regex: new RegExp(`^\\s*${ep}\\s*(\\d+)[\\)\\.:]?\\s*`, 'gim'),
+    regex: new RegExp(`(?:^|\\s+)${ep}\\s*(\\d+)[\\)\\.:]?\\s*`, 'gi'),
     stripRegex: new RegExp(`^\\s*${ep}\\s*\\d+[\\)\\.:]?\\s*`, 'i'),
   };
 }
@@ -250,7 +250,7 @@ function buildOptionRegex(marker: string): { regex: RegExp; stripRegex: RegExp }
   if (!m) {
     // Default: A–F followed by ) or .
     return {
-      regex: /^\s*([A-F])[).]\s*/gim,
+      regex: /(?:^|\s+)([A-F])[).]\s*/gi,
       stripRegex: /^\s*[A-F][).]\s*/,
     };
   }
@@ -265,7 +265,7 @@ function buildOptionRegex(marker: string): { regex: RegExp; stripRegex: RegExp }
     const ed = dMatch ? escapedDelim(dMatch[1]) : '[:\\)\\.]?';
     
     return {
-      regex: new RegExp(`^\\s*${escapedPrefix}(\\d+)${ed}\\s*`, 'gim'),
+      regex: new RegExp(`(?:^|\\s+)${escapedPrefix}(\\d+)${ed}\\s*`, 'gi'),
       stripRegex: new RegExp(`^\\s*${escapedPrefix}\\d+${ed}\\s*`, 'i'),
     };
   }
@@ -281,7 +281,7 @@ function buildOptionRegex(marker: string): { regex: RegExp; stripRegex: RegExp }
     const ed = dMatch ? escapedDelim(dMatch[1]) : '[:\\)\\.]?';
     
     return {
-      regex: new RegExp(`^\\s*${escapedPrefix}([A-Z])${ed}\\s*`, 'gim'),
+      regex: new RegExp(`(?:^|\\s+)${escapedPrefix}([A-Z])${ed}\\s*`, 'gi'),
       stripRegex: new RegExp(`^\\s*${escapedPrefix}[A-Z]${ed}\\s*`, 'i'),
     };
   }
@@ -289,7 +289,7 @@ function buildOptionRegex(marker: string): { regex: RegExp; stripRegex: RegExp }
   // Fallback if they just typed a prefix like "Option"
   const ep = escapeRx(m).replace(/ /g, '\\s*');
   return {
-    regex: new RegExp(`^\\s*${ep}\\s*([A-Z])[\\)\\.:]?\\s*`, 'gim'),
+    regex: new RegExp(`(?:^|\\s+)${ep}\\s*([A-Z])[\\)\\.:]?\\s*`, 'gi'),
     stripRegex: new RegExp(`^\\s*${ep}\\s*[A-Z][\\)\\.:]?\\s*`, 'i'),
   };
 }
@@ -500,8 +500,10 @@ export function parseExamText(text: string, config: ParserConfig): ParsedQuestio
     // Strip any redundant leading "QUESTION n" / "Question n" / "Q n" left after marker removal
     questionText = questionText.replace(/^(?:QUESTION|Question|Q)\s*\d*\s*[:.-]?\s*/i, '').trim();
 
-    // Skip questions with no detected answer — don't fabricate True/False defaults
-    if (questionText && correctAnswers.length > 0) {
+    // Push if we have question text AND (we found an answer OR we found options).
+    // This prevents dropping valid questions where the answer parsing failed or was missing.
+    const hasOptions = Object.keys(options).length > 0;
+    if (questionText && (correctAnswers.length > 0 || hasOptions)) {
       const signals = detectMultiSignals(questionText);
       const isMulti = correctAnswers.length > 1 || signals.isMulti;
       const maxSelections = signals.isExplicit ? signals.maxSelections : Math.max(correctAnswers.length, signals.maxSelections);
